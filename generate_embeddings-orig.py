@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 """
-Secure Embedding Generator for MovieLens DiskANN Demo
+Embedding Generator for MovieLens DiskANN Demo
 
 This script generates vector embeddings for users and movies in the MovieLens dataset
-without using sentence-transformers or scikit-learn to avoid joblib security issues.
+to enable similarity search using DiskANN in PostgreSQL.
 
 Usage:
-    python generate_embeddings_secure.py <connection_string>
+    python generate_embeddings.py <connection_string>
 
 Example:
-    python generate_embeddings_secure.py "host=localhost dbname=movielens_demo user=postgres"
+    python generate_embeddings.py "host=localhost dbname=movielens_demo user=postgres"
 """
 
 import pandas as pd
 import psycopg2
 import numpy as np
+from sentence_transformers import SentenceTransformer
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 import sys
 import warnings
 import logging
-from transformers import AutoTokenizer, AutoModel
-import torch
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -36,56 +36,13 @@ def connect_to_db(connection_string):
         logger.error(f"Error connecting to database: {e}")
         sys.exit(1)
 
-def get_text_embedding(text, tokenizer, model, max_length=128):
-    """Generate text embedding using transformers directly"""
-    try:
-        # Tokenize the text
-        inputs = tokenizer(text, return_tensors='pt', truncation=True, 
-                          padding=True, max_length=max_length)
-        
-        # Generate embeddings
-        with torch.no_grad():
-            outputs = model(**inputs)
-            # Use mean pooling of last hidden states
-            embeddings = outputs.last_hidden_state.mean(dim=1)
-            
-        return embeddings.squeeze().numpy()
-    except Exception as e:
-        logger.error(f"Error generating embedding for text: {text[:50]}... - {e}")
-        # Return a zero vector as fallback
-        return np.zeros(384)  # Default size for many models
-
-def normalize_vector(vector):
-    """Normalize a vector to unit length"""
-    norm = np.linalg.norm(vector)
-    if norm > 0:
-        return vector / norm
-    return vector
-
-def manual_standardize(values):
-    """Manual standardization without sklearn"""
-    values = np.array(values, dtype=float)
-    mean_val = np.mean(values)
-    std_val = np.std(values)
-    if std_val > 0:
-        return (values - mean_val) / std_val
-    return values - mean_val
-
 def generate_movie_embeddings(conn):
     """Generate embeddings for movies based on title and genres"""
     logger.info("Generating movie embeddings...")
     
-    # Load a lightweight model for text embeddings
-    logger.info("Loading text embedding model...")
-    try:
-        tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/all-MiniLM-L6-v2')
-        model = AutoModel.from_pretrained('sentence-transformers/all-MiniLM-L6-v2')
-        model.eval()
-    except Exception as e:
-        logger.error(f"Error loading model: {e}")
-        logger.info("Falling back to manual embedding generation...")
-        tokenizer = None
-        model = None
+    # Load sentence transformer model
+    logger.info("Loading sentence transformer model...")
+    model = SentenceTransformer('all-MiniLM-L6-v2')
     
     cursor = conn.cursor()
     
@@ -118,33 +75,28 @@ def generate_movie_embeddings(conn):
         title = movie[1]
         genres = movie[2:]
         
+        # Create genre text representation
+        active_genres = [genre_names[j] for j, is_active in enumerate(genres) if is_active]
+        genre_text = ' '.join(active_genres) if active_genres else 'general'
+        
+        # Combine title and genres for embedding
+        text_for_embedding = f"{title} {genre_text}"
+        
         try:
-            # Create genre text representation
-            active_genres = [genre_names[j] for j, is_active in enumerate(genres) if is_active]
-            genre_text = ' '.join(active_genres) if active_genres else 'general'
-            
-            # Combine title and genres for embedding
-            text_for_embedding = f"{title} {genre_text}"
-            
-            if tokenizer and model:
-                # Generate text embedding using transformers
-                text_embedding = get_text_embedding(text_for_embedding, tokenizer, model)
-                # Ensure 110 dimensions
-                if len(text_embedding) > 110:
-                    text_embedding = text_embedding[:110]
-                else:
-                    text_embedding = np.pad(text_embedding, (0, 110 - len(text_embedding)))
-            else:
-                # Fallback: Simple hash-based embedding
-                text_hash = hash(text_for_embedding) % (2**32)
-                text_embedding = np.array([
-                    (text_hash >> i) & 1 for i in range(110)
-                ], dtype=float)
+            # Generate text embedding
+            text_embedding = model.encode(text_for_embedding)
             
             # Create genre vector (one-hot encoding)
             genre_vector = np.array(genres, dtype=float)
             
-            # Combine text and genre embeddings (110 + 18 = 128)
+            # Combine text and genre embeddings
+            # Ensure text embedding is exactly 110 dimensions
+            if len(text_embedding) > 110:
+                text_embedding = text_embedding[:110]
+            else:
+                text_embedding = np.pad(text_embedding, (0, 110 - len(text_embedding)))
+            
+            # Combine with 18-dimensional genre vector
             combined_embedding = np.concatenate([text_embedding, genre_vector])
             
             # Ensure exactly 128 dimensions
@@ -154,7 +106,9 @@ def generate_movie_embeddings(conn):
                 combined_embedding = np.pad(combined_embedding, (0, 128 - len(combined_embedding)))
             
             # Normalize the embedding
-            combined_embedding = normalize_vector(combined_embedding)
+            embedding_norm = np.linalg.norm(combined_embedding)
+            if embedding_norm > 0:
+                combined_embedding = combined_embedding / embedding_norm
             
             # Update movie with embedding
             cursor.execute("""
@@ -228,9 +182,10 @@ def generate_user_embeddings(conn):
     genre_prefs = cursor.fetchall()
     genre_pref_dict = {row[0]: row[1:] for row in genre_prefs}
     
-    # Prepare occupation encoding manually
+    # Prepare occupation encoding
     occupations = list(set([user[3] for user in users if user[3]]))
-    occupation_to_idx = {occ: idx for idx, occ in enumerate(occupations)}
+    occupation_encoder = LabelEncoder()
+    occupation_encoder.fit(occupations)
     
     embeddings_generated = 0
     
@@ -247,10 +202,10 @@ def generate_user_embeddings(conn):
             age_normalized = (age - 18) / (73 - 18) if age else 0.5  # Normalize age to 0-1
             gender_encoded = 1.0 if gender == 'M' else 0.0
             
-            # Encode occupation manually
+            # Encode occupation
             occupation_encoded = 0
-            if occupation and occupation in occupation_to_idx:
-                occupation_encoded = occupation_to_idx[occupation] / len(occupations)
+            if occupation and occupation in occupations:
+                occupation_encoded = occupation_encoder.transform([occupation])[0] / len(occupations)
             
             # Rating behavior features
             rating_features = np.array([
@@ -280,7 +235,9 @@ def generate_user_embeddings(conn):
             user_embedding = np.pad(user_features, (0, 128 - len(user_features)))
             
             # Normalize the embedding
-            user_embedding = normalize_vector(user_embedding)
+            embedding_norm = np.linalg.norm(user_embedding)
+            if embedding_norm > 0:
+                user_embedding = user_embedding / embedding_norm
             
             # Update user with embedding
             cursor.execute("""
@@ -353,8 +310,8 @@ def verify_embeddings(conn):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python generate_embeddings_secure.py <connection_string>")
-        print("Example: python generate_embeddings_secure.py 'host=localhost dbname=movielens_demo user=postgres'")
+        print("Usage: python generate_embeddings.py <connection_string>")
+        print("Example: python generate_embeddings.py 'host=localhost dbname=movielens_demo user=postgres'")
         sys.exit(1)
     
     connection_string = sys.argv[1]
@@ -383,7 +340,7 @@ def main():
         # Verify embeddings
         verify_embeddings(conn)
         
-        logger.info("✓ Secure embedding generation completed successfully!")
+        logger.info("✓ Embedding generation completed successfully!")
         logger.info("\nNext steps:")
         logger.info("1. Create DiskANN indexes on the embedding columns")
         logger.info("2. Set up Apache AGE graph with the loaded data")
@@ -398,3 +355,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
