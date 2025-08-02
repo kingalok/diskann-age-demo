@@ -1,0 +1,19 @@
+# Secure Python Requirements for DiskANN and Apache AGE Demo
+# This file ensures no problematic joblib versions are installed by avoiding dependencies that pull it in.
+
+# Core database connectivity
+psycopg2-binary==2.9.10
+
+# Data manipulation (essential)
+pandas==2.2.3
+numpy==1.26.4
+
+# Text embeddings - using transformers directly
+transformers==4.45.2
+torch==2.4.1
+
+# Additional utilities
+requests==2.32.3
+tqdm==4.66.5
+
+
