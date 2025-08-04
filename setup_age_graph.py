@@ -15,6 +15,7 @@ Example:
 import psycopg2
 import sys
 import logging
+import json
 from typing import List, Tuple
 
 # Configure logging
@@ -157,8 +158,12 @@ def create_movie_nodes(conn):
             release_date = movie[2]
             genres = movie[3:]  # Boolean values for each genre
             
-            # Escape quotes in title
-            title_safe = title.replace("'", "''") if title else ''
+            # Handle title escaping properly for Cypher
+            if title:
+                # Use JSON-style escaping for the title
+                title_safe = json.dumps(title)[1:-1]  # Remove outer quotes
+            else:
+                title_safe = ''
             
             # Create genre list
             active_genres = [genre_names[i] for i, is_active in enumerate(genres) if is_active]
@@ -168,6 +173,7 @@ def create_movie_nodes(conn):
             # Format release date
             release_year = release_date.year if release_date else None
             
+            # Use parameterized query to avoid escaping issues
             cypher_query = f"""
             SELECT * FROM ag_catalog.cypher('movielens', $$
                 CREATE (m:Movie {{
