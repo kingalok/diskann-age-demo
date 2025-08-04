@@ -312,7 +312,7 @@ def verify_embeddings(conn):
         SELECT 
             COUNT(*) as total_movies,
             COUNT(embedding) as movies_with_embeddings,
-            AVG(array_length(embedding, 1)) as avg_embedding_dim
+            AVG(vector_dims(embedding)) as avg_embedding_dim
         FROM movies
     """)
     movie_stats = cursor.fetchone()
@@ -322,7 +322,7 @@ def verify_embeddings(conn):
         SELECT 
             COUNT(*) as total_users,
             COUNT(embedding) as users_with_embeddings,
-            AVG(array_length(embedding, 1)) as avg_embedding_dim
+            AVG(vector_dims(embedding)) as avg_embedding_dim
         FROM users
     """)
     user_stats = cursor.fetchone()
@@ -332,7 +332,7 @@ def verify_embeddings(conn):
     
     # Sample embedding verification
     cursor.execute("""
-        SELECT movie_id, array_length(embedding, 1) as dim
+        SELECT movie_id, vector_dims(embedding) as dim
         FROM movies 
         WHERE embedding IS NOT NULL 
         LIMIT 3
@@ -341,7 +341,7 @@ def verify_embeddings(conn):
     logger.info(f"Sample movie embeddings: {movie_samples}")
     
     cursor.execute("""
-        SELECT user_id, array_length(embedding, 1) as dim
+        SELECT user_id, vector_dims(embedding) as dim
         FROM users 
         WHERE embedding IS NOT NULL 
         LIMIT 3
