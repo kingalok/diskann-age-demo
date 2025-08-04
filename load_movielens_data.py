@@ -55,7 +55,7 @@ def load_users_data(conn, filepath):
         cursor.execute("""
             INSERT INTO users (user_id, age, gender, occupation, zip_code)
             VALUES (%s, %s, %s, %s, %s)
-        """, (row['user_id'], row['age'], row['gender'], row['occupation'], row['zip_code']))
+        """, (int(row['user_id']), int(row['age']), str(row['gender']), str(row['occupation']), str(row['zip_code'])))
     
     conn.commit()
     cursor.close()
@@ -120,7 +120,7 @@ def load_movies_data(conn, filepath):
                 genre_mystery, genre_romance, genre_sci_fi, genre_thriller,
                 genre_war, genre_western
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, [row['movie_id'], row['title'], release_date, row['imdb_url']] + genre_values)
+        """, [int(row['movie_id']), str(row['title']), release_date, str(row['imdb_url'])] + genre_values)
     
     conn.commit()
     cursor.close()
@@ -156,7 +156,7 @@ def load_ratings_data(conn, filepath):
         # Prepare batch insert
         values = []
         for _, row in batch.iterrows():
-            values.append((row['user_id'], row['movie_id'], row['rating'], row['timestamp']))
+            values.append((int(row['user_id']), int(row['movie_id']), int(row['rating']), int(row['timestamp'])))
         
         # Execute batch insert
         cursor.executemany("""
