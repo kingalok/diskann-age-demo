@@ -82,21 +82,25 @@ foreach ($f in $factories) {
   }
 
   # 4) Linked services (auth model: Managed Identity vs Key/ConnString)
-  $linked = az datafactory linked-service list -g $rg --factory-name $fn -o json | ConvertFrom-Json
-  $linkedSlim = $linked | ForEach-Object {
-    $auth = if ($_.properties.typeProperties.credential) { "CredentialRef" }
-            elseif ($_.properties.typeProperties.connectionString) { "ConnString" }
-            elseif ($_.properties.typeProperties.url) { "URL" }
-            elseif ($_.properties.connectVia) { "ViaIR" }
-            elseif ($_.properties.typeProperties?.authentication == "ManagedIdentity" -or $_.properties?.typeProperties?.servicePrincipalId -eq $null) { "ManagedIdentity?" }
-            else { "Unknown" }
-    [pscustomobject]@{
-      name = $_.name
-      type = $_.properties.type
-      auth = $auth
-      connectVia = $_.properties.connectVia?.referenceName
-    }
+# Replace the whole $linkedSlim = ... block with this:
+$linkedSlim = $linked | ForEach-Object {
+  $tp = $_.properties.typeProperties
+  $hasProp = { param($o,$n) $o -and ($o.PSObject.Properties.Name -contains $n) }
+
+  if (&$hasProp $tp 'credential')        { $auth = 'CredentialRef' }
+  elseif (&$hasProp $tp 'connectionString'){ $auth = 'ConnString' }
+  elseif (&$hasProp $tp 'url')           { $auth = 'URL' }
+  elseif ($_.properties.PSObject.Properties.Name -contains 'connectVia') { $auth = 'ViaIR' }
+  elseif ((&$hasProp $tp 'authentication') -and ($tp.authentication -eq 'ManagedIdentity')) { $auth = 'ManagedIdentity' }
+  else { $auth = 'Unknown' }
+
+  [pscustomobject]@{
+    name       = $_.name
+    type       = $_.properties.type
+    auth       = $auth
+    connectVia = $_.properties.connectVia?.referenceName  # okay on PS7; on PS5.1 change to: ($_.properties.connectVia.referenceName)
   }
+}
 
   # 5) Public network access & identities
   $pna   = $factory.properties?.publicNetworkAccess
