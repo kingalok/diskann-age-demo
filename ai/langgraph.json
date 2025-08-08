@@ -1,0 +1,6 @@
+{
+    "graphs": {
+        "mcp": "./langgraph_react_agent1.py:graph"
+    },
+    "dependencies": ["."]
+}
