@@ -1,0 +1,140 @@
+<mxfile host="app.diagrams.net" modified="2025-08-08T12:30:55Z" agent="5.0 (Windows)" version="24.7.7" type="device">
+  <diagram id="ADFDevSecure" name="ADF Dev - Secure Architecture">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Resource Groups -->
+        <mxCell id="rgdata" value="rg-data-dev" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;horizontalStack=0;startSize=30;rounded=1;strokeColor=#0366d6;fillColor=#eaf2fb;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="40" width="820" height="920" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="rgnet" value="rg-network-dev" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;horizontalStack=0;startSize=30;rounded=1;strokeColor=#0366d6;fillColor=#eaf2fb;" vertex="1" parent="1">
+          <mxGeometry x="30" y="40" width="960" height="920" as="geometry"/>
+        </mxCell>
+
+        <!-- VNet -->
+        <mxCell id="vnet" value="vnet-dev-core" style="swimlane;startSize=28;rounded=1;strokeColor=#0b8043;fillColor=#e8f5e9;fontStyle=1;" vertex="1" parent="rgnet">
+          <mxGeometry x="20" y="60" width="920" height="820" as="geometry"/>
+        </mxCell>
+
+        <!-- Subnets -->
+        <mxCell id="snet_shir" value="snet-shir" style="swimlane;startSize=24;rounded=1;strokeColor=#0b8043;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="vnet">
+          <mxGeometry x="20" y="40" width="880" height="260" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="snet_pep" value="snet-pep" style="swimlane;startSize=24;rounded=1;strokeColor=#0b8043;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="vnet">
+          <mxGeometry x="20" y="320" width="880" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="snet_bastion" value="snet-bastion" style="swimlane;startSize=24;rounded=1;strokeColor=#0b8043;fillColor=#ffffff;fontStyle=1;" vertex="1" parent="vnet">
+          <mxGeometry x="20" y="560" width="880" height="220" as="geometry"/>
+        </mxCell>
+
+        <!-- Bastion -->
+        <mxCell id="bastion" value="Azure Bastion" style="shape=hexagon;perimeter=hexagonPerimeter2;rounded=1;strokeColor=#5f6368;fillColor=#fff3e0;" vertex="1" parent="snet_bastion">
+          <mxGeometry x="40" y="70" width="160" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- SHIR VMs -->
+        <mxCell id="shir1" value="SHIR VM 1&#xa;Win 2022" style="shape=mxgraph.azure.virtual_machine;strokeColor=#5f6368;fillColor=#e3f2fd;rounded=1;" vertex="1" parent="snet_shir">
+          <mxGeometry x="60" y="80" width="180" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="shir2" value="SHIR VM 2&#xa;Win 2022" style="shape=mxgraph.azure.virtual_machine;strokeColor=#5f6368;fillColor=#e3f2fd;rounded=1;" vertex="1" parent="snet_shir">
+          <mxGeometry x="270" y="80" width="180" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Private DNS Zones -->
+        <mxCell id="pdns" value="Private DNS Zones&#xa;(vault, blob, dfs, sql, ...)" style="shape=folder;rounded=1;strokeColor=#5f6368;fillColor=#ede7f6;" vertex="1" parent="rgnet">
+          <mxGeometry x="40" y="70" width="260" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Data Factory -->
+        <mxCell id="adf" value="Azure Data Factory (ADF)&#xa;adf-dev-&lt;org&gt;" style="shape=mxgraph.azure.data_factory;strokeColor=#5f6368;fillColor=#bbdefb;rounded=1;fontStyle=1" vertex="1" parent="rgdata">
+          <mxGeometry x="40" y="70" width="230" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- Managed Identity -->
+        <mxCell id="uami" value="User-Assigned MI&#xa;uami-adf-dev" style="shape=mxgraph.azure.active_directory;strokeColor=#5f6368;fillColor=#c8e6c9;rounded=1;" vertex="1" parent="rgdata">
+          <mxGeometry x="300" y="80" width="200" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Key Vault -->
+        <mxCell id="kv" value="Key Vault&#xa;kv-dev-&lt;org&gt;&#xa;(Private Endpoint)" style="shape=mxgraph.azure.key_vaults;strokeColor=#5f6368;fillColor=#ffe0b2;rounded=1;" vertex="1" parent="rgdata">
+          <mxGeometry x="40" y="220" width="240" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- Log Analytics -->
+        <mxCell id="law" value="Log Analytics&#xa;law-dev-ops" style="shape=mxgraph.azure.log_analytics_workspaces;strokeColor=#5f6368;fillColor=#e0f7fa;rounded=1;" vertex="1" parent="rgdata">
+          <mxGeometry x="300" y="220" width="220" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Storage Account -->
+        <mxCell id="stg" value="Storage Account&#xa;(PE in snet-pep)" style="shape=mxgraph.azure.storage_account;strokeColor=#5f6368;fillColor=#f3e5f5;rounded=1;" vertex="1" parent="rgdata">
+          <mxGeometry x="570" y="70" width="230" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- Azure SQL -->
+        <mxCell id="sql" value="Azure SQL / PostgreSQL&#xa;(PE in snet-pep)" style="shape=mxgraph.azure.sql_database;strokeColor=#5f6368;fillColor=#fce4ec;rounded=1;" vertex="1" parent="rgdata">
+          <mxGeometry x="570" y="220" width="230" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- Managed Private Endpoints block -->
+        <mxCell id="mpe" value="Managed Private Endpoints (from ADF)" style="rounded=1;strokeColor=#5f6368;fillColor=#f1f8e9;dashed=1;" vertex="1" parent="rgdata">
+          <mxGeometry x="40" y="360" width="760" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Connectors -->
+        <!-- Bastion -> SHIR -->
+        <mxCell id="e1" edge="1" parent="vnet" source="bastion" target="shir1" style="endArrow=block;strokeColor=#5f6368;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="vnet" source="bastion" target="shir2" style="endArrow=block;strokeColor=#5f6368;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ADF -> UAMI -->
+        <mxCell id="e3" edge="1" parent="rgdata" source="adf" target="uami" value="uses MI" style="endArrow=block;strokeColor=#5f6368;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ADF -> Key Vault -->
+        <mxCell id="e4" edge="1" parent="rgdata" source="adf" target="kv" value="secrets (if needed)" style="endArrow=block;strokeColor=#5f6368;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ADF -> Log Analytics -->
+        <mxCell id="e5" edge="1" parent="rgdata" source="adf" target="law" value="diagnostics" style="endArrow=block;strokeColor=#5f6368;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ADF Managed PE to Storage/SQL -->
+        <mxCell id="e6" edge="1" parent="rgdata" source="adf" target="stg" value="Managed PE" style="endArrow=block;dashed=1;strokeColor=#5f6368;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="rgdata" source="adf" target="sql" value="Managed PE" style="endArrow=block;dashed=1;strokeColor=#5f6368;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- SHIR -> Private/Hybrid sources (abstract) -->
+        <mxCell id="onprem" value="Private / Hybrid Data Sources" style="rounded=1;strokeColor=#5f6368;fillColor=#fafafa;dashed=1;" vertex="1" parent="rgnet">
+          <mxGeometry x="640" y="880" width="280" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="rgnet" source="shir1" target="onprem" value="outbound only" style="endArrow=block;strokeColor=#5f6368;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="rgnet" source="shir2" target="onprem" value="outbound only" style="endArrow=block;strokeColor=#5f6368;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Notes -->
+        <mxCell id="notes" value="Notes:&#xa;• No public IPs; RDP via Bastion&#xa;• PE for KV/Storage/DB&#xa;• ADF uses UAMI where supported&#xa;• Two SHIR nodes for HA&#xa;• Diagnostics → Log Analytics" style="text;whiteSpace=wrap;rounded=1;strokeColor=#cfd8dc;fillColor=#f9fbe7;" vertex="1" parent="rgdata">
+          <mxGeometry x="40" y="480" width="760" height="160" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
