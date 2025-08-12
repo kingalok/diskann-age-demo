@@ -1,0 +1,214 @@
+<mxfile host="app.diagrams.net" modified="2025-08-10T16:25:34Z" agent="5.0 (Windows)" version="24.7.7" type="device">
+  <diagram id="a1" name="01 - Overview (10k-ft)">
+    <mxGraphModel dx="1700" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="hub" value="Hub Subscription (rg-network-hub, rg-data-dev)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=36;rounded=1;strokeColor=#1976d2;fillColor=#e3f2fd;" parent="1" vertex="1">
+          <mxGeometry x="40" y="40" width="1040" height="980" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="adf" value="Azure Data Factory (Dev)
+Git-enabled" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/data-factory.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="hub" vertex="1">
+  <mxGeometry x="80" y="100" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="repo" value="Azure Repos (Git)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/repos.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="hub" vertex="1">
+  <mxGeometry x="220" y="110" width="90" height="90" as="geometry"/>
+</mxCell>
+        <mxCell id="entra" value="User-assigned MI" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/active-directory.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="hub" vertex="1">
+  <mxGeometry x="340" y="110" width="90" height="90" as="geometry"/>
+</mxCell>
+        <mxCell id="kv" value="Key Vault" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/key-vault.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="hub" vertex="1">
+  <mxGeometry x="460" y="110" width="90" height="90" as="geometry"/>
+</mxCell>
+        <mxCell id="law" value="Log Analytics" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/log-analytics.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="hub" vertex="1">
+  <mxGeometry x="580" y="110" width="90" height="90" as="geometry"/>
+</mxCell>
+        <mxCell id="vm1" value="SHIR Node 1 (Win 2022, v5.56)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/virtual-machine.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="s_shir" vertex="1">
+  <mxGeometry x="120" y="340" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="vm2" value="SHIR Node 2 (Win 2022, v5.56)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/virtual-machine.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="s_shir" vertex="1">
+  <mxGeometry x="280" y="340" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="bastion" value="Azure Bastion (no public IPs)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/virtual-network-gateways.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="s_bast" vertex="1">
+  <mxGeometry x="120" y="50" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="pgA" value="PostgreSQL Flexible Server (Private)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/database-postgresql-server.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetA" vertex="1">
+  <mxGeometry x="80" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="dnsA" value="Private DNS Zone (linked)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/dns.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetA" vertex="1">
+  <mxGeometry x="250" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="pgB" value="PostgreSQL Flexible Server (Private)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/database-postgresql-server.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetB" vertex="1">
+  <mxGeometry x="80" y="140" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="dnsB" value="Private DNS Zone (linked)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/dns.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetB" vertex="1">
+  <mxGeometry x="250" y="140" width="110" height="110" as="geometry"/>
+</mxCell>
+
+        <mxCell id="vnetFrame" value="vnet-hub" style="swimlane;startSize=30;rounded=1;strokeColor=#2e7d32;fillColor=#e8f5e9;fontStyle=1" parent="hub" vertex="1">
+          <mxGeometry x="60" y="260" width="960" height="700" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s_shir" value="snet-shir" style="swimlane;startSize=28;rounded=1;strokeColor=#2e7d32;fillColor=#ffffff;" parent="vnetFrame" vertex="1">
+          <mxGeometry x="20" y="40" width="920" height="260" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s_bast" value="snet-bastion" style="swimlane;startSize=28;rounded=1;strokeColor=#2e7d32;fillColor=#ffffff;" parent="vnetFrame" vertex="1">
+          <mxGeometry x="20" y="330" width="920" height="160" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dnsNote" value="DNS: Hub must resolve client *.postgres.database.azure.com (or privatelink) — link client Private DNS zones to hub or use DNS Private Resolver." style="text;whiteSpace=wrap;rounded=1;strokeColor=#cfd8dc;fillColor=#fffde7;" parent="vnetFrame" vertex="1">
+          <mxGeometry x="20" y="510" width="920" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="clientA" value="Client A Subscription" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=30;rounded=1;strokeColor=#6a1b9a;fillColor=#f3e5f5;" parent="1" vertex="1">
+          <mxGeometry x="1110" y="40" width="760" height="450" as="geometry"/>
+        </mxCell>
+        <mxCell id="clientB" value="Client B Subscription" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=30;rounded=1;strokeColor=#6a1b9a;fillColor=#f3e5f5;" parent="1" vertex="1">
+          <mxGeometry x="1110" y="520" width="760" height="500" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="vnetA" value="vnet-clientA (peered)" style="swimlane;startSize=26;rounded=1;strokeColor=#2e7d32;fillColor=#e8f5e9;fontStyle=1" parent="clientA" vertex="1">
+          <mxGeometry x="20" y="40" width="720" height="360" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="vnetB" value="vnet-clientB (peered)" style="swimlane;startSize=26;rounded=1;strokeColor=#2e7d32;fillColor=#e8f5e9;fontStyle=1" parent="clientB" vertex="1">
+          <mxGeometry x="20" y="40" width="720" height="400" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="peerA" edge="1" parent="1" source="vnetFrame" target="vnetA" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="peerB" edge="1" parent="1" source="vnetFrame" target="vnetB" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow1" edge="1" parent="1" source="adf" target="vm1" value="ADF (Script activity) → Linked Service (UAMI) → connectVia: SHIR" style="endArrow=block;dashed=1;strokeColor=#546e7a;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="flow2" edge="1" parent="1" source="vm1" target="pgA" value="over peering" style="endArrow=block;dashed=1;strokeColor=#546e7a;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="a2" name="02 - Detailed (Hub+Spokes, SHIR UAMI)">
+    <mxGraphModel dx="1900" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/><mxCell id="1" parent="0"/>
+
+        <mxCell id="rgData" value="rg-data-dev (Hub)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=36;rounded=1;strokeColor=#1976d2;fillColor=#e3f2fd;" parent="1" vertex="1">
+          <mxGeometry x="40" y="40" width="900" height="1290" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="adf2" value="ADF (Dev) — Git: Azure Repos" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/data-factory.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="rgData" vertex="1">
+  <mxGeometry x="80" y="110" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="repo2" value="Azure Repos (Git)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/repos.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="rgData" vertex="1">
+  <mxGeometry x="210" y="120" width="90" height="90" as="geometry"/>
+</mxCell>
+        <mxCell id="entra2" value="UAMI: uami-adf-dev" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/active-directory.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="rgData" vertex="1">
+  <mxGeometry x="330" y="120" width="90" height="90" as="geometry"/>
+</mxCell>
+        <mxCell id="kv2" value="Key Vault (Secrets User RBAC)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/key-vault.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="rgData" vertex="1">
+  <mxGeometry x="450" y="120" width="90" height="90" as="geometry"/>
+</mxCell>
+        <mxCell id="law2" value="Log Analytics (diag)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/log-analytics.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="rgData" vertex="1">
+  <mxGeometry x="570" y="120" width="90" height="90" as="geometry"/>
+</mxCell>
+        <mxCell id="vmA" value="SHIR Node A (Win 2022 v5.56)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/virtual-machine.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="s_shir2" vertex="1">
+  <mxGeometry x="80" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="vmB" value="SHIR Node B (Win 2022 v5.56)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/virtual-machine.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="s_shir2" vertex="1">
+  <mxGeometry x="220" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="bast2" value="Bastion (JIT RDP)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/virtual-network-gateways.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="s_bast2" vertex="1">
+  <mxGeometry x="80" y="80" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="dns2" value="Private DNS Resolver/links" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/dns.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="s_dns2" vertex="1">
+  <mxGeometry x="80" y="80" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="pgCA" value="PG Flexible (Private)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/database-postgresql-server.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetCA" vertex="1">
+  <mxGeometry x="80" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="dnsCA" value="Private DNS Zone" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/dns.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetCA" vertex="1">
+  <mxGeometry x="220" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="pgCB" value="PG Flexible (Private)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/database-postgresql-server.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetCB" vertex="1">
+  <mxGeometry x="80" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="dnsCB" value="Private DNS Zone" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/dns.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetCB" vertex="1">
+  <mxGeometry x="220" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="pgCC" value="PG Flexible (Private)" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/database-postgresql-server.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetCC" vertex="1">
+  <mxGeometry x="80" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+        <mxCell id="dnsCC" value="Private DNS Zone" style="shape=image;imageAspect=0;aspect=fixed;image=https://code.benco.io/icon-collection/azure-docs/dns.svg;verticalLabelPosition=bottom;verticalAlign=top;labelBackgroundColor=#ffffff;" parent="vnetCC" vertex="1">
+  <mxGeometry x="220" y="120" width="110" height="110" as="geometry"/>
+</mxCell>
+
+        <mxCell id="pipeBox" value="Pipeline: Script Activity&#xa;LS=AzurePostgreSql v2.0 (Auth=UAMI, connectVia=SHIR)&#xa;Timeout=5m, Result to ADLS (optional)" style="rounded=1;strokeColor=#5f6368;fillColor=#f1f8e9;" parent="rgData" vertex="1">
+          <mxGeometry x="60" y="260" width="760" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="rgNet" value="rg-network-hub (Hub)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=36;rounded=1;strokeColor=#2e7d32;fillColor=#e8f5e9;" parent="1" vertex="1">
+          <mxGeometry x="980" y="40" width="600" height="1290" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="vnetHub2" value="vnet-hub" style="swimlane;startSize=30;rounded=1;strokeColor=#2e7d32;fillColor=#e8f5e9;fontStyle=1" parent="rgNet" vertex="1">
+          <mxGeometry x="20" y="60" width="560" height="1200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s_shir2" value="snet-shir" style="swimlane;startSize=28;rounded=1;strokeColor=#2e7d32;fillColor=#ffffff;" parent="vnetHub2" vertex="1">
+          <mxGeometry x="20" y="40" width="520" height="360" as="geometry"/>
+        </mxCell>
+        <mxCell id="s_bast2" value="snet-bastion" style="swimlane;startSize=28;rounded=1;strokeColor=#2e7d32;fillColor=#ffffff;" parent="vnetHub2" vertex="1">
+          <mxGeometry x="20" y="420" width="520" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="s_dns2" value="(Optional) DNS / Resolver" style="swimlane;startSize=28;rounded=1;strokeColor=#2e7d32;fillColor=#ffffff;" parent="vnetHub2" vertex="1">
+          <mxGeometry x="20" y="640" width="520" height="240" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="clients" value="Clients (Spokes)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=36;rounded=1;strokeColor=#6a1b9a;fillColor=#f3e5f5;" parent="1" vertex="1">
+          <mxGeometry x="1600" y="40" width="560" height="1290" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="vnetCA" value="vnet-clientA (peered)" style="swimlane;startSize=28;rounded=1;strokeColor=#2e7d32;fillColor=#e8f5e9;fontStyle=1" parent="clients" vertex="1">
+          <mxGeometry x="20" y="60" width="520" height="360" as="geometry"/>
+        </mxCell>
+        <mxCell id="vnetCB" value="vnet-clientB (peered)" style="swimlane;startSize=28;rounded=1;strokeColor=#2e7d32;fillColor=#e8f5e9;fontStyle=1" parent="clients" vertex="1">
+          <mxGeometry x="20" y="450" width="520" height="360" as="geometry"/>
+        </mxCell>
+        <mxCell id="vnetCC" value="vnet-clientC (peered)" style="swimlane;startSize=28;rounded=1;strokeColor=#2e7d32;fillColor=#e8f5e9;fontStyle=1" parent="clients" vertex="1">
+          <mxGeometry x="20" y="840" width="520" height="360" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="peer1" edge="1" parent="1" source="vnetHub2" target="vnetCA" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="peer2" edge="1" parent="1" source="vnetHub2" target="vnetCB" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="peer3" edge="1" parent="1" source="vnetHub2" target="vnetCC" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fA" edge="1" parent="1" source="adf2" target="vmA" value="connectVia: SHIR" style="endArrow=block;dashed=1;strokeColor=#546e7a;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="fB" edge="1" parent="1" source="vmA" target="pgCA" value="Script (UAMI) over peering" style="endArrow=block;dashed=1;strokeColor=#546e7a;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="notes" value="Keys: SHIR v5.56 supports UAMI with AzurePostgreSql v2.0 LS; System-assigned MI not supported on SHIR. Enable AAD on client PG; grant UAMI DB roles. Ensure DNS resolution from hub to client PG FQDN (private zone or DNS Private Resolver). Dev ADF Git-enabled; promote via CI/CD." style="text;whiteSpace=wrap;rounded=1;strokeColor=#cfd8dc;fillColor=#f1f8e9;" parent="rgData" vertex="1">
+          <mxGeometry x="60" y="440" width="760" height="240" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

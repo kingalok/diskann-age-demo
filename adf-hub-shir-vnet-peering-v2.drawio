@@ -1,0 +1,195 @@
+<mxfile host="65bd71144e">
+    <diagram id="pg1" name="01 - Overview (10k-ft)">
+        <mxGraphModel dx="1110" dy="504" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="rg-hub" value="Hub Subscription / rg-network-hub + rg-data-dev" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=36;rounded=1;strokeColor=#0366d6;fillColor=#eaf2fb;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="1020" height="980" as="geometry"/>
+                </mxCell>
+                <mxCell id="adf" value="Azure Data Factory (Dev)&#xa;Git-enabled + UAMI attached" style="shape=mxgraph.azure.data_factory;rounded=1;strokeColor=#5f6368;fillColor=#bbdefb;fontStyle=1" parent="rg-hub" vertex="1">
+                    <mxGeometry x="40" y="70" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="uami" value="User-Assigned Managed Identity&#xa;uami-adf-dev" style="shape=mxgraph.azure.active_directory;rounded=1;strokeColor=#5f6368;fillColor=#c8e6c9;" parent="rg-hub" vertex="1">
+                    <mxGeometry x="310" y="85" width="250" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="kv" value="Key Vault&#xa;kv-dev-&lt;org&gt;" style="shape=mxgraph.azure.key_vaults;rounded=1;strokeColor=#5f6368;fillColor=#ffe0b2;" parent="rg-hub" vertex="1">
+                    <mxGeometry x="600" y="85" width="230" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="law" value="Log Analytics&#xa;law-dev-ops" style="shape=mxgraph.azure.log_analytics_workspaces;rounded=1;strokeColor=#5f6368;fillColor=#e0f7fa;" parent="rg-hub" vertex="1">
+                    <mxGeometry x="860" y="85" width="200" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="vnet-hub" value="vnet-hub" style="shape=mxgraph.azure.virtual_network;whiteSpace=wrap;html=1;rounded=1;strokeColor=#0b8043;fillColor=#e8f5e9;fontStyle=1" parent="rg-hub" vertex="1">
+                    <mxGeometry x="40" y="240" width="980" height="720" as="geometry"/>
+                </mxCell>
+                <mxCell id="snet-shir" value="snet-shir" style="swimlane;startSize=28;rounded=1;strokeColor=#0b8043;fillColor=#ffffff;fontStyle=1;" parent="vnet-hub" vertex="1">
+                    <mxGeometry x="20" y="40" width="940" height="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="shir1" value="Self-Hosted IR Node 1&#xa;Windows Server 2022 (v5.56)" style="shape=mxgraph.azure.virtual_machine;rounded=1;strokeColor=#5f6368;fillColor=#e3f2fd;" parent="snet-shir" vertex="1">
+                    <mxGeometry x="80" y="80" width="240" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="shir2" value="Self-Hosted IR Node 2&#xa;Windows Server 2022 (v5.56)" style="shape=mxgraph.azure.virtual_machine;rounded=1;strokeColor=#5f6368;fillColor=#e3f2fd;" parent="snet-shir" vertex="1">
+                    <mxGeometry x="360" y="80" width="240" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="snet-bastion" value="snet-bastion" style="swimlane;startSize=28;rounded=1;strokeColor=#0b8043;fillColor=#ffffff;fontStyle=1;" parent="vnet-hub" vertex="1">
+                    <mxGeometry x="20" y="320" width="940" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="bastion" value="Azure Bastion (JIT RDP)&#xa;No public IP on SHIR" style="shape=mxgraph.azure.bastions;rounded=1;strokeColor=#5f6368;fillColor=#fff3e0;" parent="snet-bastion" vertex="1">
+                    <mxGeometry x="80" y="60" width="240" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="dns-note" value="DNS: hub must resolve client &quot;*.postgres.database.azure.com&quot; (or privatelink)&#xa;• Link client Private DNS zones to hub OR use Private DNS Resolver / forwarders" style="text;whiteSpace=wrap;rounded=1;strokeColor=#cfd8dc;fillColor=#f9fbe7;" parent="vnet-hub" vertex="1">
+                    <mxGeometry x="20" y="500" width="940" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="adf-uami" value="attach / use" style="endArrow=block;strokeColor=#5f6368;labelBackgroundColor=#ffffff;" parent="rg-hub" source="adf" target="uami" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="adf-kv" value="secrets (fallback)" style="endArrow=block;strokeColor=#5f6368;labelBackgroundColor=#ffffff;" parent="rg-hub" source="adf" target="kv" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="adf-law" value="diagnostics" style="endArrow=block;strokeColor=#5f6368;labelBackgroundColor=#ffffff;" parent="rg-hub" source="adf" target="law" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="adf-shir" value="connectVia: SHIR" style="endArrow=block;dashed=1;strokeColor=#5f6368;labelBackgroundColor=#ffffff;" parent="rg-hub" source="adf" target="shir1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="notes" value="Flow: ADF (Script activity) → Linked Service (PostgreSQL v2.0, UAMI) → connectVia: SHIR → over peering → client PG.&#xa;Keys: UAMI supported on SHIR ≥5.50; ensure DNS resolution from hub to client PG FQDN (private zone)." style="text;whiteSpace=wrap;rounded=1;strokeColor=#cfd8dc;fillColor=#f1f8e9;" parent="rg-hub" vertex="1">
+                    <mxGeometry x="40" y="720" width="980" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="spoke1" value="Client A Subscription / rg-clientA" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=30;rounded=1;strokeColor=#673ab7;fillColor=#f3e5f5;" parent="1" vertex="1">
+                    <mxGeometry x="1100" y="40" width="780" height="470" as="geometry"/>
+                </mxCell>
+                <mxCell id="vnet-a" value="vnet-clientA (peered)" style="shape=mxgraph.azure.virtual_network;rounded=1;strokeColor=#0b8043;fillColor=#e8f5e9;fontStyle=1" parent="spoke1" vertex="1">
+                    <mxGeometry x="20" y="40" width="740" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="pg-a" value="Azure Database for PostgreSQL Flexible Server&#xa;(Private access on delegated subnet)&#xa;AAD enabled; UAMI granted" style="shape=mxgraph.azure.sql_database;rounded=1;strokeColor=#5f6368;fillColor=#fce4ec;" parent="vnet-a" vertex="1">
+                    <mxGeometry x="60" y="110" width="360" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="dns-a" value="Private DNS Zone&#xa;privatelink.postgres.database.azure.com&#xa;(linked to clientA + hub)" style="shape=folder;rounded=1;strokeColor=#5f6368;fillColor=#ede7f6;" parent="vnet-a" vertex="1">
+                    <mxGeometry x="450" y="140" width="250" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="spoke2" value="Client B Subscription / rg-clientB" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=30;rounded=1;strokeColor=#673ab7;fillColor=#f3e5f5;" parent="1" vertex="1">
+                    <mxGeometry x="1100" y="550" width="780" height="470" as="geometry"/>
+                </mxCell>
+                <mxCell id="vnet-b" value="vnet-clientB (peered)" style="shape=mxgraph.azure.virtual_network;rounded=1;strokeColor=#0b8043;fillColor=#e8f5e9;fontStyle=1" parent="spoke2" vertex="1">
+                    <mxGeometry x="20" y="40" width="740" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="pg-b" value="Azure Database for PostgreSQL Flexible Server&#xa;(Private access on delegated subnet)&#xa;AAD enabled; UAMI granted" style="shape=mxgraph.azure.sql_database;rounded=1;strokeColor=#5f6368;fillColor=#fce4ec;" parent="vnet-b" vertex="1">
+                    <mxGeometry x="60" y="110" width="360" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="dns-b" value="Private DNS Zone&#xa;privatelink.postgres.database.azure.com&#xa;(linked to clientB + hub)" style="shape=folder;rounded=1;strokeColor=#5f6368;fillColor=#ede7f6;" parent="vnet-b" vertex="1">
+                    <mxGeometry x="450" y="140" width="250" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="peer-a" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;" parent="1" source="vnet-hub" target="vnet-a" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="peer-b" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;" parent="1" source="vnet-hub" target="vnet-b" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="pg2" name="02 - Detailed (Hub+Spokes, SHIR UAMI)">
+        <mxGraphModel dx="1110" dy="504" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1400" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="rg-data" value="rg-data-dev (Hub)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=36;rounded=1;strokeColor=#1565c0;fillColor=#e3f2fd;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="880" height="1280" as="geometry"/>
+                </mxCell>
+                <mxCell id="adf2" value="Azure Data Factory (Dev)&#xa;Git: Azure Repos (collab branch)" style="shape=mxgraph.azure.data_factory;rounded=1;strokeColor=#5f6368;fillColor=#bbdefb;fontStyle=1" parent="rg-data" vertex="1">
+                    <mxGeometry x="40" y="70" width="280" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="git" value="Azure Repos (Git)" style="shape=folder;rounded=1;strokeColor=#5f6368;fillColor=#fffde7;" parent="rg-data" vertex="1">
+                    <mxGeometry x="340" y="90" width="200" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="uami2" value="UAMI: uami-adf-dev&#xa;(attached to ADF and referenced by ADF Credential)" style="shape=mxgraph.azure.active_directory;rounded=1;strokeColor=#5f6368;fillColor=#c8e6c9;" parent="rg-data" vertex="1">
+                    <mxGeometry x="40" y="210" width="500" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="kv2" value="Key Vault (RBAC: Secrets User for UAMI)" style="shape=mxgraph.azure.key_vaults;rounded=1;strokeColor=#5f6368;fillColor=#ffe0b2;" parent="rg-data" vertex="1">
+                    <mxGeometry x="40" y="320" width="280" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="law2" value="Log Analytics Workspace (Diagnostics)" style="shape=mxgraph.azure.log_analytics_workspaces;rounded=1;strokeColor=#5f6368;fillColor=#e0f7fa;" parent="rg-data" vertex="1">
+                    <mxGeometry x="340" y="320" width="260" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="pipe" value="Pipeline: Script Activity&#xa;Linked Service = AzurePostgreSql v2.0&#xa;Auth = UserAssignedManagedIdentity&#xa;connectVia = SHIR" style="rounded=1;strokeColor=#5f6368;fillColor=#f1f8e9;" parent="rg-data" vertex="1">
+                    <mxGeometry x="40" y="450" width="560" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="notes2" value="Implementation keys:&#xa;• SHIR v5.56 supports UAMI with AzurePostgreSql v2.0 LS (System-assigned MI not supported on SHIR).&#xa;• Ensure AAD auth enabled on client PG; grant UAMI principal proper DB roles.&#xa;• DNS: hub must resolve each client PG FQDN to its private IP (link private DNS zones to hub, or use DNS Private Resolver).&#xa;• Git-enabled Dev ADF; promote via CI/CD to Test/Prod." style="text;whiteSpace=wrap;rounded=1;strokeColor=#cfd8dc;fillColor=#f1f8e9;" parent="rg-data" vertex="1">
+                    <mxGeometry x="40" y="620" width="560" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="rg-net" value="rg-network-hub (Hub)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=36;rounded=1;strokeColor=#2e7d32;fillColor=#e8f5e9;" parent="1" vertex="1">
+                    <mxGeometry x="960" y="40" width="560" height="1280" as="geometry"/>
+                </mxCell>
+                <mxCell id="vnet-hub2" value="vnet-hub" style="shape=mxgraph.azure.virtual_network;rounded=1;strokeColor=#0b8043;fillColor=#e8f5e9;fontStyle=1" parent="rg-net" vertex="1">
+                    <mxGeometry x="20" y="60" width="520" height="1180" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_shir2" value="snet-shir" style="swimlane;startSize=28;rounded=1;strokeColor=#0b8043;fillColor=#ffffff;fontStyle=1;" parent="vnet-hub2" vertex="1">
+                    <mxGeometry x="20" y="40" width="480" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="shirA" value="SHIR Node A&#xa;Windows 2022 (v5.56)" style="shape=mxgraph.azure.virtual_machine;rounded=1;strokeColor=#5f6368;fillColor=#e3f2fd;" parent="s_shir2" vertex="1">
+                    <mxGeometry x="60" y="90" width="180" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="shirB" value="SHIR Node B&#xa;Windows 2022 (v5.56)" style="shape=mxgraph.azure.virtual_machine;rounded=1;strokeColor=#5f6368;fillColor=#e3f2fd;" parent="s_shir2" vertex="1">
+                    <mxGeometry x="260" y="90" width="180" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_bastion2" value="snet-bastion" style="swimlane;startSize=28;rounded=1;strokeColor=#0b8043;fillColor=#ffffff;fontStyle=1;" parent="vnet-hub2" vertex="1">
+                    <mxGeometry x="20" y="400" width="480" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="bast2" value="Azure Bastion (no public IPs)" style="shape=mxgraph.azure.bastions;rounded=1;strokeColor=#5f6368;fillColor=#fff3e0;" parent="s_bastion2" vertex="1">
+                    <mxGeometry x="60" y="60" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="s_dns2" value="(Optional) DNS / Resolver" style="swimlane;startSize=28;rounded=1;strokeColor=#0b8043;fillColor=#ffffff;fontStyle=1;" parent="vnet-hub2" vertex="1">
+                    <mxGeometry x="20" y="600" width="480" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="dns2" value="DNS: hub must resolve client PG FQDN.&#xa;Approach: link client Private DNS zones to hub, or deploy DNS Private Resolver + forwarders." style="text;whiteSpace=wrap;rounded=1;strokeColor=#cfd8dc;fillColor=#f9fbe7;" parent="s_dns2" vertex="1">
+                    <mxGeometry x="40" y="60" width="400" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="clients" value="Clients (Spokes)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;startSize=36;rounded=1;strokeColor=#6a1b9a;fillColor=#f3e5f5;" parent="1" vertex="1">
+                    <mxGeometry x="1540" y="40" width="620" height="1280" as="geometry"/>
+                </mxCell>
+                <mxCell id="vnet-ca" value="vnet-clientA (peered)" style="shape=mxgraph.azure.virtual_network;rounded=1;strokeColor=#0b8043;fillColor=#e8f5e9;fontStyle=1" parent="clients" vertex="1">
+                    <mxGeometry x="20" y="60" width="580" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="pg-ca" value="PostgreSQL Flexible Server (Private access)&#xa;AAD auth ON; UAMI has DB perms" style="shape=mxgraph.azure.sql_database;rounded=1;strokeColor=#5f6368;fillColor=#fce4ec;" parent="vnet-ca" vertex="1">
+                    <mxGeometry x="40" y="120" width="320" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="dns-ca" value="Private DNS Zone (clientA)&#xa;privatelink.postgres.database.azure.com" style="shape=folder;rounded=1;strokeColor=#5f6368;fillColor=#ede7f6;" parent="vnet-ca" vertex="1">
+                    <mxGeometry x="380" y="120" width="180" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="vnet-cb" value="vnet-clientB (peered)" style="shape=mxgraph.azure.virtual_network;rounded=1;strokeColor=#0b8043;fillColor=#e8f5e9;fontStyle=1" parent="clients" vertex="1">
+                    <mxGeometry x="20" y="450" width="580" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="pg-cb" value="PostgreSQL Flexible Server (Private access)&#xa;AAD auth ON; UAMI has DB perms" style="shape=mxgraph.azure.sql_database;rounded=1;strokeColor=#5f6368;fillColor=#fce4ec;" parent="vnet-cb" vertex="1">
+                    <mxGeometry x="40" y="510" width="320" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="dns-cb" value="Private DNS Zone (clientB)&#xa;privatelink.postgres.database.azure.com" style="shape=folder;rounded=1;strokeColor=#5f6368;fillColor=#ede7f6;" parent="vnet-cb" vertex="1">
+                    <mxGeometry x="380" y="510" width="180" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="vnet-cc" value="vnet-clientC (peered)" style="shape=mxgraph.azure.virtual_network;rounded=1;strokeColor=#0b8043;fillColor=#e8f5e9;fontStyle=1" parent="clients" vertex="1">
+                    <mxGeometry x="20" y="840" width="580" height="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="pg-cc" value="PostgreSQL Flexible Server (Private access)&#xa;AAD auth ON; UAMI has DB perms" style="shape=mxgraph.azure.sql_database;rounded=1;strokeColor=#5f6368;fillColor=#fce4ec;" parent="vnet-cc" vertex="1">
+                    <mxGeometry x="40" y="900" width="320" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="dns-cc" value="Private DNS Zone (clientC)&#xa;privatelink.postgres.database.azure.com" style="shape=folder;rounded=1;strokeColor=#5f6368;fillColor=#ede7f6;" parent="vnet-cc" vertex="1">
+                    <mxGeometry x="380" y="900" width="180" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="peer1" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;" parent="1" source="vnet-hub2" target="vnet-ca" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="peer2" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;" parent="1" source="vnet-hub2" target="vnet-cb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="peer3" value="VNet Peering" style="endArrow=block;dashed=1;strokeColor=#8e24aa;labelBackgroundColor=#ffffff;" parent="1" source="vnet-hub2" target="vnet-cc" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="adf-shir2" value="connectVia: SHIR" style="endArrow=block;dashed=1;strokeColor=#5f6368;labelBackgroundColor=#ffffff;" parent="1" source="adf2" target="shirA" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="path1" value="Script activity (UAMI) over peering" style="endArrow=block;dashed=1;strokeColor=#607d8b;labelBackgroundColor=#ffffff;" parent="1" source="shirA" target="pg-ca" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
